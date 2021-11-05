@@ -1,3 +1,5 @@
+# Complexity O(log(n)) log(n) - average complaxity of BST operations, O(n) is the worst (all leafs in one direction)
+# Space O(D) D - tree depth
 def findClosestValueInBst(tree, target):
     return findClosest(tree, target, tree.value)
 

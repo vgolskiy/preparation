@@ -1,3 +1,5 @@
+# Complexity O(nlog(n)) nlog(n) - complexity of the best sorting algorithm (Heap/Merge Sort),
+# Space O(1)
 def nonConstructibleChange(coins):
     if len(coins) > 0:
         coins.sort()
