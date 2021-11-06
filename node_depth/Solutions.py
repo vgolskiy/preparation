@@ -1,17 +1,18 @@
-#Complexity: O(n) n - number of nodes
-#Space: O(h) h - height of tree (for stack)
+#Complexity: O(n^2) n - number of nodes
+#Space: O(n)
+def nodeDepthsHelper(node, lvls, lvl):
+    if not node:
+        return
+    if lvl:
+        lvls.append(lvl)
+    nodeDepthsHelper(node.left, lvls, lvl + 1)
+    nodeDepthsHelper(node.right, lvls, lvl + 1)
+
+
 def nodeDepths(root):
-    res = 0
-    stack = [{"node":root, "depth":0}]
-    while len(stack):
-        tmp = stack.pop()
-        node, depth = tmp["node"], tmp["depth"]
-        if not node:
-            continue
-        res += depth
-        stack.append({"node": node.left, "depth": depth + 1})
-        stack.append({"node": node.right, "depth": depth + 1})
-    return res
+    lvls = []
+    nodeDepthsHelper(root, lvls, lvl=0)
+    return sum(lvls)
 
 
 class BinaryTree:

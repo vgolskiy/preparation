@@ -16,22 +16,29 @@ type BST struct {
 	Root *Node
 }
 
-func calcDepthSumHelper(node *Node, sums *[]int, lvl int) {
-	if node == nil {
-		return
-	}
-	*sums = append(*sums, lvl)
-	calcDepthSumHelper(node.Left, sums, lvl+1)
-	calcDepthSumHelper(node.Right, sums, lvl+1)
+type Stack struct {
+	Node  *Node
+	Depth int
 }
 
 func calcDepthSum(tree *BST) int {
 	var res int
-	var sums []int
-
-	calcDepthSumHelper(tree.Root, &sums, 0)
-	for _, num := range sums {
-		res += num
+	var stack = []Stack{
+		{
+			Node:  tree.Root,
+			Depth: 0,
+		},
+	}
+	for len(stack) > 0 {
+		node, depth, tmp := stack[len(stack)-1].Node, stack[len(stack)-1].Depth, stack[:len(stack)-1]
+		stack = tmp
+		tmp = nil
+		if node == nil {
+			continue
+		}
+		res += depth
+		stack = append(stack, Stack{Node: node.Left, Depth: depth + 1})
+		stack = append(stack, Stack{Node: node.Right, Depth: depth + 1})
 	}
 	return res
 }
