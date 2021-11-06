@@ -1,3 +1,5 @@
+# Complexity O(v + e) - v - number of vertices, e - number of edges (need to write name to array + iterate thru the children)
+# Space O(v) - length of returning array
 class Node:
     def __init__(self, name):
         self.children = []

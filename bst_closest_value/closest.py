@@ -24,7 +24,7 @@ class BST:
         self.right = None
 
 
-def test_case_1():
+if __name__ == '__main__':
     root = BST(10)
     root.left = BST(5)
     root.left.left = BST(2)
@@ -37,7 +37,3 @@ def test_case_1():
     expected = 22
     actual = findClosestValueInBst(root, 20)
     print("{} vs {}".format(expected, actual))
-
-
-if __name__ == '__main__':
-    test_case_1()
