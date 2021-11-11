@@ -1,3 +1,5 @@
+# Complexity O(n^2) n - quantity of elements in array, O(n) is the best (all elements were sorted)
+# Space O(1)
 def find_smaller(array):
     minimal = 0
     for i in range(1, len(array)):
