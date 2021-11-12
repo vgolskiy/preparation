@@ -9,9 +9,7 @@ func fibonacci() func() int {
 	y := 1
 	return func() int {
 		res := x
-		tmp := x + y
-		x = y
-		y = tmp
+		x, y = y, x + y
 		return res
 	}
 }
