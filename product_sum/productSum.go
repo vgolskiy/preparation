@@ -6,8 +6,8 @@ func productSum(array []interface{}, depth int) int {
 	var res int
 
 	for _, el := range array {
-		if _, ok := el.(int); ok {
-			res += el.(int)
+		if v, ok := el.(int); ok {
+			res += v
 		} else {
 			res += productSum(el.([]interface{}), depth + 1)
 		}
