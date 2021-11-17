@@ -1,3 +1,6 @@
+# Complexity O(n*log(n) + m*log(m)) n, m - quantities of elements in arrays,
+# nlog(n) - complexity of the best sorting algorithm (Heap/Merge Sort),
+# Space O(1)
 def smallestDifference(arrayOne, arrayTwo):
     arrayOne.sort()
     arrayTwo.sort()
