@@ -5,7 +5,7 @@ def minimumWaitingTime(queries):
     length = 0
     n = len(queries)
     for i, q in enumerate(queries):
-        length += q * (n  - (i + 1))
+        length += q * (n - (i + 1))
     return length
 
 

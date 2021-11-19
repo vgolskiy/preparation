@@ -5,13 +5,11 @@ def getNthFib(n):
     curr = 1
     if n > 1:
         while (n > 2):
-            tmp = curr
-            curr = curr + prev
-            prev = tmp
+            prev, curr = curr, curr + prev
             n -= 1
         return curr
     return prev
 
 
 if __name__ == "__main__":
-    print(getNthFib(3))
+    print(getNthFib(5))
