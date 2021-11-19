@@ -26,5 +26,5 @@ func getPermutations(arr []int) (res [][]int) {
 }
 
 func main() {
-	fmt.Println(getPermutations([]int{1, 2, 3}))
+	fmt.Println(getPermutations([]int{1, 2, 3, 4}))
 }
