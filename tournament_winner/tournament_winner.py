@@ -5,10 +5,7 @@ def tournamentWinner(competitions, results):
     winner = ""
     for i, teams in enumerate(competitions):
         team = teams[0] if results[i] else teams[1]
-        if team in winners:
-            winners[team] += 3
-        else:
-            winners[team] = 3
+        winners[team] = winners.get(team, 0) + 3
         if winner != "" and winners[team] > winners[winner]:
             winner = team
         if winner == "":
