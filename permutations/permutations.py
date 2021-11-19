@@ -1,3 +1,5 @@
+# Complexity O(n*n!) n - length of incoming array
+# Space O(n*n!)
 def getPermutations(array):
     perms = []
     permutationHelper(array, [], perms)
