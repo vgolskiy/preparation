@@ -12,4 +12,4 @@ def getNthFib(n):
 
 
 if __name__ == "__main__":
-    print(getNthFib(5))
+    print(getNthFib(4))
