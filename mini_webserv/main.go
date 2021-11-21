@@ -1,27 +1,39 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 )
 
-type Sfact struct {
+type SFact struct {
+	Id          int      `json:"id,omitempty"`
 	Title       string   `json:"title" validate:"required"`
 	Description string   `json:"description" validate:"required"`
 	Links       []string `json:"links,omitempty"`
 }
 
-type Infacts struct {
-	Facts []Sfact
+type InFacts struct {
+	Facts []SFact
 }
 
-var fact = Sfact{
+var fact = SFact{
+	Id:          1,
 	Title:       "високосная секунда",
 	Description: "Дополнительная (висоќосная, скачущая) сеќунда[4][5][6], или сеќунда координ́ации[7] (англ. leap second) — секунда, иногда добавляемая (теоретически возможно и вычитание) в шкалу всемирного координированного времени (UTC) для согласования его со средним солнечным временем UT1.",
 	Links:       []string{"shorturl.at/dwzK9"},
 }
+
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "ozon"
+	password = "ozon"
+	dbname   = "ozon"
+)
 
 func getFact(w http.ResponseWriter) {
 	jData, err := json.Marshal(fact)
@@ -34,7 +46,7 @@ func getFact(w http.ResponseWriter) {
 
 func readFacts(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var facts Infacts
+	var facts InFacts
 	err := decoder.Decode(&facts)
 	if err != nil {
 		panic(err)
@@ -71,6 +83,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8888", nil))
 }
