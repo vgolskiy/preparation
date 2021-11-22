@@ -30,7 +30,7 @@ var fact = SFact{
 const (
 	host     = "localhost"
 	port     = 5432
-	user     = "ozon"
+	user     = "vladimirgolskiy"
 	password = "ozon"
 	dbname   = "ozon"
 )
@@ -83,14 +83,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// DB connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
+
+	// DB connection string validation
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
 	}
+
+	// DB connection closing deferring
 	defer db.Close()
+
+	// Creating request to DB
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
 
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8888", nil))
