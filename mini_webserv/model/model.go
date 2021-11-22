@@ -78,7 +78,7 @@ func FactInsert(facts []S.SFact) ([]int, error) {
 		}
 		err = DB.QueryRow(script, fact.Title, fact.Description, s).Scan(&id)
 		if err != nil {
-			return []int{}, err
+			return ids, err
 		}
 		ids = append(ids, id)
 	}

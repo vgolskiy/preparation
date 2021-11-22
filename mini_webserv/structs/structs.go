@@ -15,3 +15,7 @@ type PsqlFact struct {
 	SFact
 	Links string
 }
+
+type WriteFactResult struct {
+	Ids []int `json:"ids"`
+}

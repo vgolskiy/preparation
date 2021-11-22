@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	M "../model" //M - model
+	M "../model"   //M - model
+	S "../structs" //S - structs
 	R "../support" //R - request/response
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -13,7 +13,7 @@ func HandleFactAny(w http.ResponseWriter) {
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 	} else {
-		R.ReturnFact(w, fact)
+		R.ReturnData(w, fact)
 	}
 }
 
@@ -26,20 +26,26 @@ func HandleFactById(w http.ResponseWriter, s string) {
 		if err != nil {
 			http.Error(w, "Bad request: "+err.Error(), http.StatusBadRequest)
 		} else {
-			R.ReturnFact(w, fact)
+			R.ReturnData(w, fact)
 		}
 	}
 }
 
 func HandleFactsInsertion(w http.ResponseWriter, r *http.Request) {
-	facts, err := R.ReadFacts(r)
+	var (
+		res S.WriteFactResult
+		err error
+		facts []S.SFact
+	)
+
+	facts, err = R.ReadFacts(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	} else {
-		ids, err := M.FactInsert(facts)
+		res.Ids, err = M.FactInsert(facts)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		fmt.Fprintf(w, "%d", ids)
+		R.ReturnData(w, res)
 	}
 }

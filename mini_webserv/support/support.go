@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func ReturnFact(w http.ResponseWriter, fact S.SFact) {
-	jData, err := json.Marshal(fact)
+func ReturnData(w http.ResponseWriter, data interface{}) {
+	jData, err := json.Marshal(data)
 	if err != nil {
 		panic(err)
 	}
