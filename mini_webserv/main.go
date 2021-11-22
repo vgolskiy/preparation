@@ -7,6 +7,8 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type SFact struct {
@@ -16,16 +18,16 @@ type SFact struct {
 	Links       []string `json:"links,omitempty"`
 }
 
+type PsqlFact struct {
+	SFact
+	Links string
+}
+
 type InFacts struct {
 	Facts []SFact
 }
 
-var fact = SFact{
-	Id:          1,
-	Title:       "високосная секунда",
-	Description: "Дополнительная (висоќосная, скачущая) сеќунда[4][5][6], или сеќунда координ́ации[7] (англ. leap second) — секунда, иногда добавляемая (теоретически возможно и вычитание) в шкалу всемирного координированного времени (UTC) для согласования его со средним солнечным временем UT1.",
-	Links:       []string{"shorturl.at/dwzK9"},
-}
+var DB *sql.DB
 
 const (
 	host     = "localhost"
@@ -35,7 +37,7 @@ const (
 	dbname   = "ozon"
 )
 
-func getFact(w http.ResponseWriter) {
+func returnFact(w http.ResponseWriter, fact SFact) {
 	jData, err := json.Marshal(fact)
 	if err != nil {
 		panic(err)
@@ -59,13 +61,78 @@ func readFacts(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(jData))
 }
 
+func convertToFact(fact *SFact, tmp *PsqlFact) {
+	fact.Id = tmp.Id
+	fact.Title = tmp.Title
+	fact.Description = tmp.Description
+	fact.Links = strings.Split(tmp.Links, ",")
+}
+
+func factLastOne() (SFact, error) {
+	var fact SFact
+	var tmp PsqlFact
+
+	script := `
+	SELECT *
+	FROM facts
+	ORDER BY id DESC
+	LIMIT 1`
+	row := DB.QueryRow(script)
+	if err := row.Scan(&tmp.Id, &tmp.Title, &tmp.Description, &tmp.Links); err != nil {
+		if err == sql.ErrNoRows {
+			return fact, fmt.Errorf("DB does not contain any facts")
+		}
+		return fact, fmt.Errorf("facts: %v", err)
+	}
+	convertToFact(&fact, &tmp)
+	return fact, nil
+}
+
+func factByID(id int) (SFact, error) {
+	var fact SFact
+	var tmp PsqlFact
+
+	script := `
+	SELECT *
+	FROM facts
+	WHERE id = $1`
+	row := DB.QueryRow(script, id)
+	if err := row.Scan(&tmp.Id, &tmp.Title, &tmp.Description, &tmp.Links); err != nil {
+		if err == sql.ErrNoRows {
+			return fact, fmt.Errorf("DB does not contain such fact %d", id)
+		}
+		return fact, fmt.Errorf("facts %d: %v", id, err)
+	}
+	convertToFact(&fact, &tmp)
+	return fact, nil
+}
+
+func splitFn(c rune) bool {
+	return c == '/'
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.URL, r.Method, r.Body)
 	switch r.Method {
 	case "GET":
-		switch r.URL.Path {
-		case "/fact":
-			getFact(w)
+		parts := strings.FieldsFunc(r.URL.Path, splitFn)
+		switch len(parts) {
+		case 1:
+			fact, err := factLastOne()
+			if err != nil {
+				http.Error(w, "Bad request", http.StatusBadRequest)
+			}
+			returnFact(w, fact)
+		case 2:
+			id, err := strconv.Atoi(parts[1])
+			if err != nil {
+				http.Error(w, "Bad request: "+err.Error(), http.StatusBadRequest)
+			}
+			fact, err := factByID(id)
+			if err != nil {
+				http.Error(w, "Bad request: "+err.Error(), http.StatusBadRequest)
+			}
+			returnFact(w, fact)
 		default:
 			http.Error(w, "404 not found", http.StatusNotFound)
 		}
@@ -83,22 +150,23 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var err error
 	// DB connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
 	// DB connection string validation
-	db, err := sql.Open("postgres", psqlInfo)
+	DB, err = sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
 	}
 
 	// DB connection closing deferring
-	defer db.Close()
+	defer DB.Close()
 
 	// Creating request to DB
-	err = db.Ping()
+	err = DB.Ping()
 	if err != nil {
 		panic(err)
 	}
