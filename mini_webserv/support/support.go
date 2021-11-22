@@ -16,17 +16,12 @@ func ReturnFact(w http.ResponseWriter, fact S.SFact) {
 	fmt.Fprintf(w, string(jData))
 }
 
-func ReadFacts(w http.ResponseWriter, r *http.Request) {
+func ReadFacts(r *http.Request) ([]S.SFact, error) {
 	decoder := json.NewDecoder(r.Body)
 	var facts S.InFacts
 	err := decoder.Decode(&facts)
 	if err != nil {
-		panic(err)
+		return []S.SFact{}, err
 	}
-	w.Header().Set("Content-Type", "application/json")
-	jData, err := json.Marshal(facts)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Fprintf(w, string(jData))
+	return facts.Facts, nil
 }

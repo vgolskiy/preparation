@@ -8,12 +8,15 @@ import (
 )
 
 var DB *sql.DB
+var SEPARATOR = ", "
 
 func convertToFact(fact *S.SFact, tmp *S.PsqlFact) {
 	fact.Id = tmp.Id
 	fact.Title = tmp.Title
 	fact.Description = tmp.Description
-	fact.Links = strings.Split(tmp.Links, ",")
+	if len(tmp.Links) > 0 {
+		fact.Links = strings.Split(tmp.Links, SEPARATOR)
+	}
 }
 
 func FactLastOne() (S.SFact, error) {
@@ -53,4 +56,31 @@ func FactByID(id int) (S.SFact, error) {
 	}
 	convertToFact(&fact, &tmp)
 	return fact, nil
+}
+
+func FactInsert(facts []S.SFact) ([]int, error) {
+	var (
+		id		int
+		ids		[]int
+		err		error
+		fact	S.SFact
+		s		string
+	)
+
+	script := `
+	INSERT INTO facts (title, description, links)
+	VALUES ($1, $2, $3)
+	RETURNING id`
+
+	for _, fact = range facts {
+		if len(fact.Links) > 0 {
+			s = strings.Join(fact.Links, SEPARATOR)
+		}
+		err = DB.QueryRow(script, fact.Title, fact.Description, s).Scan(&id)
+		if err != nil {
+			return []int{}, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, nil
 }
