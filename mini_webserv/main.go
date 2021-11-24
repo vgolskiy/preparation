@@ -1,10 +1,10 @@
 package main
 
 import (
-	H "./handlers" //H - handlers for request/response
-	M "./model"	//M - DB model functions
 	_ "github.com/lib/pq"
+	H "handlers"
 	"log"
+	M "model"
 	"net/http"
 )
 
