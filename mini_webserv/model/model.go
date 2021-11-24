@@ -7,6 +7,14 @@ import (
 	"strings"
 )
 
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "vladimirgolskiy"
+	password = "ozon"
+	dbname   = "ozon"
+)
+
 var DB *sql.DB
 var SEPARATOR = ", "
 
@@ -83,4 +91,44 @@ func FactInsert(facts []S.SFact) ([]int, error) {
 		ids = append(ids, id)
 	}
 	return ids, nil
+}
+
+func FactUpdate(id int, fact S.SFact) (interface{}, error) {
+	var s string
+
+	script := `
+	UPDATE facts
+	SET title = $2, description = $3, links = $4
+	WHERE id = $1;`
+
+	if len(fact.Links) > 0 {
+		s = strings.Join(fact.Links, SEPARATOR)
+	}
+	res, err := DB.Exec(script, id, fact.Title, fact.Description, s)
+	if err != nil {
+		return nil, err
+	}
+	quantity, err := res.RowsAffected()
+	if err != nil || quantity != 1 {
+		return nil, fmt.Errorf("Fact update failed.")
+	}
+	return S.Empty{}, nil
+}
+
+func DBConnect() {
+	var err error
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+
+	DB, err = sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+
+	err = DB.Ping()
+	if err != nil {
+		panic(err)
+	}
 }

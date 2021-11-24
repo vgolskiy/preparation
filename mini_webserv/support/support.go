@@ -25,3 +25,13 @@ func ReadFacts(r *http.Request) ([]S.SFact, error) {
 	}
 	return facts.Facts, nil
 }
+
+func ReadFact(r *http.Request) (S.SFact, error) {
+	decoder := json.NewDecoder(r.Body)
+	var fact S.SFact
+	err := decoder.Decode(&fact)
+	if err != nil {
+		return fact, err
+	}
+	return fact, nil
+}

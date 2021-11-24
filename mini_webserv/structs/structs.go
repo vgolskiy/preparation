@@ -19,3 +19,7 @@ type PsqlFact struct {
 type WriteFactResult struct {
 	Ids []int `json:"ids"`
 }
+
+type Empty struct {
+	empty string	`json:""`
+}

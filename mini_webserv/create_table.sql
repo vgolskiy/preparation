@@ -1,6 +1,6 @@
 CREATE TABLE facts (
     id          SERIAL PRIMARY KEY,
-    title       VARCHAR(255) UNIQUE,
+    title       VARCHAR(255),
     description TEXT,
     links       TEXT
 );
