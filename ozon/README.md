@@ -28,3 +28,5 @@
     curl -X PUT http://localhost:8888/fact/15 -H 'Content-Type: application/json' -d '{"title":"с ссылками22","description":"некоторые факты имеют ссылки на дополнительную информацию","links":["http://ozon.ru"]}'
 ```
 Обновить можно только существующую запись.
+
+Внимание: для POST и PUT методов поля title и description являются обязательными к заполнению.
