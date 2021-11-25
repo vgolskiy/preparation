@@ -21,8 +21,6 @@ RUN go build -o mini_webserv .
 # Container for application run
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates curl
-
 # Adding POSTGRES
 RUN apk --no-cache add postgresql
 RUN (addgroup -S postgres && adduser -S postgres -G postgres || true)
