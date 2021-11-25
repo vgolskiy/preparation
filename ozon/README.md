@@ -25,7 +25,7 @@
 
 5. Если требуется обновить данные факта воспользуйтесь примером запроса ниже:
 ```
-    curl -X PUT http://localhost:8888/fact/15 -H 'Content-Type: application/json' -d '{"title":"с ссылками22","description":"некоторые факты имеют ссылки на дополнительную информацию","links":["http://ozon.ru"]}'
+    curl -X PUT http://localhost:8888/fact/1 -H 'Content-Type: application/json' -d '{"title":"с ссылками22","description":"некоторые факты имеют ссылки на дополнительную информацию","links":["http://ozon.ru", "http://localhost:8888/fact"]}'
 ```
 Обновить можно только существующую запись.
 
