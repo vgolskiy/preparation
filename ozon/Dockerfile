@@ -3,8 +3,6 @@ FROM golang:1.12.0-alpine3.9 as builder
 
 RUN apk add git
 
-LABEL maintainer="<>"
-
 RUN mkdir /ozon
 ADD . /ozon
 WORKDIR /ozon
@@ -17,20 +15,15 @@ RUN go mod download
 # Copying application files to docker
 COPY ./src ./
 
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
-
 # Build the Go app
-RUN go build -a -installsuffix cgo -o mini_webserv .
+RUN go build -o mini_webserv .
 
 # Container for application run
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates curl
 
-# Adding POSTGRE
+# Adding POSTGRES
 RUN apk --no-cache add postgresql
 RUN (addgroup -S postgres && adduser -S postgres -G postgres || true)
 RUN mkdir -p /var/lib/postgresql/data
