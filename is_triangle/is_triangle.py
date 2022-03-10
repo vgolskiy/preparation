@@ -6,8 +6,8 @@ def verify_triangle(a, b, c):
 
 def solution(a):
     n = len(a)
-    for i in range(n):
-        for j in range(i + 1, n):
+    for i in range(n - 2):
+        for j in range(i + 1, n - 1):
             for k in range(j + 1, n):
                 if verify_triangle(a[i], a[j], a[k]):
                     return 1
