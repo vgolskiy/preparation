@@ -1,4 +1,4 @@
-#Complexity N^3
+#Complexity O(N^3)
 def verify_triangle(a, b, c):
     if a + b > c and a + c > b and c + b > a:
         return True
